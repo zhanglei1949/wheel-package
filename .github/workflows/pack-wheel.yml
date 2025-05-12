@@ -1,6 +1,12 @@
-name: Build
+name: Build Wheels
 
-on: [push, pull_request]
+on:
+  pull_request_target:
+    branches:
+      - main
+  push:
+    branches:
+      - main
 
 concurrency:
   group: ${{ github.repository }}-${{ github.event.number || github.head_ref || github.sha }}-${{ github.workflow }}
@@ -13,7 +19,8 @@ jobs:
     strategy:
       matrix:
         # macos-13 is an intel runner, macos-14 is apple silicon
-        os: [ubuntu-latest, ubuntu-24.04-arm, macos-13, macos-14, macos-15]
+        # os: [ubuntu-latest, ubuntu-24.04-arm, macos-13, macos-14]
+        os: [ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -23,11 +30,17 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
       # Only run install_dep.sh on macos system
       - name: Install dependencies
         if: startsWith(matrix.os, 'macos')
         run: |
-          bash scripts/install_dep.sh
+          bash scripts/install_deps.sh
 
       - name: Install cibuildwheel
         run: python3 -m pip install cibuildwheel==2.23.3
@@ -39,14 +52,14 @@ jobs:
           echo "MACOSX_DEPLOYMENT_TARGET={{ env.MACOSX_DEPLOYMENT_TARGET }}"
 
       - name: Setup tmate session
-        if: false
+        if: true
         uses: mxschmitt/action-tmate@v3
 
       - name: Build wheels
         run: python3 -m cibuildwheel ./tools/python_bind --output-dir wheelhouse
         env:
           # use macos version as the target
-          CIBW_ENVIRONMENT_MACOS: "MACOSX_DEPLOYMENT_TARGET={{ env.MACOSX_DEPLOYMENT_TARGET }}"
+          CIBW_ENVIRONMENT_MACOS: "MACOSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET"
 
       - uses: actions/upload-artifact@v4
         with:
