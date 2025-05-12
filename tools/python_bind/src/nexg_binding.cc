@@ -16,6 +16,8 @@
 #include <pybind11/pybind11.h>
 #include <string>
 
+#include "jni.h"
+
 #include "py_engine.h"
 
 #define STRINGIFY(x) #x

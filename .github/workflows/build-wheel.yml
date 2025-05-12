@@ -4,9 +4,6 @@ on:
   pull_request_target:
     branches:
       - main
-  push:
-    branches:
-      - main
 
 concurrency:
   group: ${{ github.repository }}-${{ github.event.number || github.head_ref || github.sha }}-${{ github.workflow }}
@@ -19,8 +16,8 @@ jobs:
     strategy:
       matrix:
         # macos-13 is an intel runner, macos-14 is apple silicon
-        # os: [ubuntu-latest, ubuntu-24.04-arm, macos-13, macos-14]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-13, macos-14]
+        #os: [ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -52,7 +49,7 @@ jobs:
           echo "MACOSX_DEPLOYMENT_TARGET={{ env.MACOSX_DEPLOYMENT_TARGET }}"
 
       - name: Setup tmate session
-        if: true
+        if: false
         uses: mxschmitt/action-tmate@v3
 
       - name: Build wheels
