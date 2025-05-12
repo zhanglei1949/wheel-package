@@ -490,6 +490,12 @@ write_env_config() {
       fi
     fi
   } >> "${OUTPUT_ENV_FILE}"
+  # if darwin, add DYLD_LIBRARY_PATH
+  if [[ "${OS_PLATFORM}" == *"Darwin"* ]]; then
+    {
+      echo "export DYLD_LIBRARY_PATH=${install_prefix}/lib:${install_prefix}/lib64"
+    } >> "${OUTPUT_ENV_FILE}"
+  fi
 }
 
 install_deps() {
