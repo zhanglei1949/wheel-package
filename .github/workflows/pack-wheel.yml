@@ -20,15 +20,15 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Setup tmate session
+        if: true
+        uses: mxschmitt/action-tmate@v3
+
       # Only run install_dep.sh on macos system
       - name: Install dependencies
         if: startsWith(matrix.os, 'macos')
         run: |
           bash scripts/install_dep.sh
-
-      - name: Setup tmate session
-        if: true
-        uses: mxschmitt/action-tmate@v3
 
       - name: Install cibuildwheel
         run: python3 -m pip install cibuildwheel==2.23.3
