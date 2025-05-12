@@ -162,6 +162,7 @@ function set_to_cn_url() {
 function fetch_source() {
   local url=$1
   local file=$2
+  info "Downloading ${file} from ${url}"
   curl -fsSL -o "${file}" "${url}/${file}"
 }
 
@@ -421,8 +422,8 @@ install_abseil() {
   fi
   pushd "${tempdir}" || exit
   directory="abseil-cpp-20240722.1"
-  file="v20240722.1.tar.gz"
-  url="https://github.com/abseil/abseil-cpp/archive/refs/tags/"
+  file="abseil-cpp-20240722.1.tar.gz"
+  url="https://github.com/abseil/abseil-cpp/releases/download/20240722.1"
   url=$(set_to_cn_url ${url})
   download_and_untar "${url}" "${file}" "${directory}"
   pushd ${directory} || exit

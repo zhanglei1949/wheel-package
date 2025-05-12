@@ -15,14 +15,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Python 3.10
+      - name: Setup Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-
-      - name: Setup tmate session
-        if: true
-        uses: mxschmitt/action-tmate@v3
+          python-version: '3.11'
 
       # Only run install_dep.sh on macos system
       - name: Install dependencies
@@ -33,18 +29,21 @@ jobs:
       - name: Install cibuildwheel
         run: python3 -m pip install cibuildwheel==2.23.3
 
+      - name: Get macos version
+        if: startsWith(matrix.os, 'macos')
+        run: |
+          echo "MACOSX_DEPLOYMENT_TARGET=$(sw_vers -productVersion | cut -d '.' -f 1-2)" >> $GITHUB_ENV
+          echo "MACOSX_DEPLOYMENT_TARGET={{ env.MACOSX_DEPLOYMENT_TARGET }}"
+
+      - name: Setup tmate session
+        if: false
+        uses: mxschmitt/action-tmate@v3
+
       - name: Build wheels
         run: python3 -m cibuildwheel ./tools/python_bind --output-dir wheelhouse
-
-      # - name: Build wheels
-      #   uses: pypa/cibuildwheel@v2.23.3
-      #   # env:
-      #   #   CIBW_SOME_OPTION: value
-      #   #    ...
-      #   with:
-      #      package-dir: tools/python_bind
-      #   #   output-dir: wheelhouse
-      #      config-file: "tools/python_bind/pyproject.toml"
+        env:
+          # use macos version as the target
+          CIBW_ENVIRONMENT_MACOS: "MACOSX_DEPLOYMENT_TARGET={{ env.MACOSX_DEPLOYMENT_TARGET }}"
 
       - uses: actions/upload-artifact@v4
         with:
