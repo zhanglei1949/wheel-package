@@ -9,13 +9,19 @@ jobs:
     strategy:
       matrix:
         # macos-13 is an intel runner, macos-14 is apple silicon
-        os: [ubuntu-latest, ubuntu-24.04-arm, macos-13, macos-14, macos-15]
+        #os: [ubuntu-latest, ubuntu-24.04-arm, macos-13, macos-14, macos-15]
+        os: [macos-13]
 
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
       - name: Setup tmate session
-        if: false
+        if: true
         uses: mxschmitt/action-tmate@v3
 
       - name: Build wheels
