@@ -59,7 +59,6 @@ jobs:
         run: |
           if [[ "${{matrix.os}}" == macos* ]]; then
             source ~/.graphscope_env
-            mkdir /opt/vineyard
           fi
           python3 -m cibuildwheel ./tools/python_bind --output-dir wheelhouse
         env:
