@@ -50,14 +50,18 @@ jobs:
         run: |
           echo "MACOSX_DEPLOYMENT_TARGET=$(sw_vers -productVersion | cut -d '.' -f 1-2)" >> $GITHUB_ENV
           echo "MACOSX_DEPLOYMENT_TARGET={{ env.MACOSX_DEPLOYMENT_TARGET }}"
-          source ~/.graphscope_env
 
       - name: Setup tmate session
         if: false
         uses: mxschmitt/action-tmate@v3
 
       - name: Build wheels
-        run: python3 -m cibuildwheel ./tools/python_bind --output-dir wheelhouse
+        run: |
+          if [[ "${{matrix.os}}" == macos* ]]; then
+            source ~/.graphscope_env
+            mkdir /opt/vineyard
+          fi
+          python3 -m cibuildwheel ./tools/python_bind --output-dir wheelhouse
         env:
           # use macos version as the target
           CIBW_ENVIRONMENT_MACOS: "MACOSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET"
